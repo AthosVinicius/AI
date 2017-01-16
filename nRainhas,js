@@ -1,0 +1,95 @@
+var arrayCampos = [];
+var arrayLinhas = [];
+
+for(var i = 1; i<9; i++){
+
+	console.log(i+"° linha rodou");
+	arrayLinhas = [];
+
+	for(var n = 1; n<9; n++){
+	
+		console.log(n+"° coluna gerada");
+		arrayLinhas[n] = [i, n];
+
+	}
+
+	arrayCampos[i] = arrayLinhas;
+}
+
+
+
+
+
+
+
+
+function brigarRainhas(r1, r2){
+
+var resultado = true;
+
+	if(r1[0] == r2[0]){
+
+		console.log("Brigam Horizontal");
+		
+		resultado = false;
+
+    }else if(r1[1] == r2[1]){
+
+		console.log("Brigam Vertical");
+		
+		resultado = false;
+
+    }else{
+
+		for(var n = 1 ; n<8; n++){
+			
+			var cl1 = (r2[1]-n);
+			var linha1 = (r2[0]+n);
+
+			var cl2 = (r2[1]+n);
+			var linha2 = (r2[0]-n);
+
+			var cl3 = (r2[1]-n);
+			var linha3 = (r2[0]-n);
+
+			var cl4 = (r2[1]+n);
+			var linha4 = (r2[0]+n);
+
+
+			if(r1[0] == linha1 & r1[1] == cl1){
+			
+    			console.log("Brigam diagonal esquerda inferior");
+				resultado = false;
+
+			}
+			if(r1[0] == linha2 & r1[1] == cl2){
+			
+    			console.log("Brigam diagonal direita superior");
+				resultado = false;
+
+			}
+			if(r1[0] == linha3 & r1[1] == cl3){
+			
+    			console.log("Brigam diagonal esquerda superior");
+				resultado = false;
+
+			}
+			if(r1[0] == linha4 & r1[1] == cl4){
+			
+    			console.log("Brigam diagonal direita inferior");
+				resultado = false;
+
+			}
+
+
+        }
+
+
+		if(resultado){
+    		console.log("Sem conflito");
+        }
+
+    }
+
+   return;
+}
