@@ -1,0 +1,182 @@
+
+
+<html>
+    <head>
+        <title>AI - learnig Machine</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+        <script>
+
+            var modelo = "Apenda a escrever";
+            var recursos = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzéíú0123456789 ";
+            var cromossomos = [];
+            var populacao = 1000;
+            var geracoes = 1000;
+            var achou = false;
+            var selecionados = 0.60;
+            var chance_de_mutacao = 0.25;
+            var tentativas = 0;
+
+            function iniciar(){
+
+                modelo = $("#frase").val();
+
+                criarPopulacao();
+                crossover_e_reproducao();
+
+            }
+
+            function randOrd() {
+                return (Math.round(Math.random())-0.5);
+            }
+            function copiarObj(original) {
+                var copia = (original instanceof Array) ? [] : {}; // verificando se é um array ou um objeto 'comum' e instanciando a cópia
+                for (i in original) { // iterando cada propriedade do objeto original
+                    if (original[i] && typeof original[i] == 'object') copia[i] = copiarObj(original[i]); // se for um objeto realiza cópia desse objeto (note a recursividade aqui)
+                    else copia[i] = original[i]; // se não simplesmente copia o valor
+                }
+                return copia; // retorna a cópia
+            };
+
+
+
+            function criarPopulacao() {
+
+
+                for (var i = 0; i < populacao; i++) {
+
+                    var genoma = "";
+                    for (var n = 0; n < modelo.length; n++) {
+
+                        genoma+= recursos.charAt(Math.floor(Math.random()* recursos.length));
+                    }
+
+                    cromossomos[i] = [gerarFitness(genoma), genoma];
+                }
+
+            }
+            function gerarFitness(genoma){
+
+                var fitness = 0;
+
+                for (var i = 0; i < (modelo.length); i++) {
+
+                   if (genoma[i] != modelo[i]) {
+                        fitness += 1
+                   }
+
+                }
+
+
+                return fitness;
+            }
+            function crossover_e_reproducao(){
+
+                tentativas = 0;
+
+                while(!achou) {
+
+                    tentativas++;
+
+                    var genomasOrdenados = cromossomos.sort(compare);
+                    var genomasSelecionados = [];
+                    var contador = 0;
+                    var mutados = 0;
+                    var totalMutaveis = (populacao/2) * chance_de_mutacao;
+                    cromossomos = [];
+
+                    for (var j = 0; j < (populacao/2); j++) {
+                        //Seleciona os melhores
+                        for (var i = 0; i < (populacao * selecionados); i++) {
+                            genomasSelecionados.push(genomasOrdenados[i]);
+                        }
+
+
+                        var pos1 = Math.floor(Math.random() * (populacao * selecionados));
+                        var igual = true;
+
+                        while (igual) {
+                            var pos2 = Math.floor(Math.random() * (populacao * selecionados));
+                            if (pos1 != pos2) {
+                                igual = false;
+                            }
+                        }
+
+                        var Pai = genomasSelecionados[pos1][1];
+                        var Mae = genomasSelecionados[pos2][1];
+
+
+                        var pontoCrossover = Math.floor(Math.random() * (modelo.length + 1) + 1);
+
+                        var novoFilho1 = Pai.substr(0, pontoCrossover) + Mae.substr(pontoCrossover);
+                        var novoFilho2 = Mae.substr(0, pontoCrossover) + Pai.substr(pontoCrossover);
+
+
+                        if (mutados < totalMutaveis) {
+
+
+                            var pontoMutacao1 = Math.floor(Math.random() * (modelo.length - 1));
+                            var pontoMutacao2 = Math.floor(Math.random() * (modelo.length - 1));
+
+                            var valorMut1 = recursos.charAt(Math.floor(Math.random()* recursos.length));
+                            var valorMut2 = recursos.charAt(Math.floor(Math.random()* recursos.length));
+
+
+                            novoFilho1 = novoFilho1.substr(0 , (pontoMutacao1 - 1)) + valorMut1 + novoFilho1.substr(pontoMutacao1);
+                            novoFilho2 = novoFilho2.substr(0 , (pontoMutacao2 - 1)) + valorMut2 + novoFilho2.substr(pontoMutacao2);
+
+
+                            mutados++;
+                        }
+
+                        cromossomos[contador] = [gerarFitness(novoFilho1), novoFilho1];
+                        contador++;
+                        cromossomos[contador] = [gerarFitness(novoFilho2), novoFilho2];
+                        contador++;
+
+                    }
+
+                    cromossomos = cromossomos.sort(compare);
+
+                    $.each(cromossomos, function(key, value){
+
+                        console.log(value[1]);
+                        if (!achou) {
+                            if (value[0] == 0) {
+                                achou = true;
+                                $("#resultado").html("<br/>A frase <b>" + value[1] + "</b> foi encontrada.");
+                                $("#tentativas").html("<br/>Aprendeu com <b>" + tentativas + "</b> tentativas.");
+                            }
+                        }
+                    });
+                }
+
+
+            }
+            function compare(a,b) {
+                if (a[0] < b[0])
+                    return -1;
+                if (a[0] > b[0])
+                    return 1;
+                return 0;
+            }
+
+
+        </script>
+    </head>
+    <body>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <input type="text" value="Apenda a escrever" id="frase">
+    <button onclick="iniciar()">Iniciar</button>
+    <span id="resultado"></span>
+    <span id="tentativas"></span>
+
+
+    </body>
+</html>
